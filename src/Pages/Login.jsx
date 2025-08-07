@@ -1,14 +1,16 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react'
-import { auth } from '../Firebase/firebase.init';
-import { Link } from 'react-router';
+import React, { useContext, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router';
 import { Eye, EyeClosed, KeyRound, Mail } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
+import { AuthContext } from '../Contexts/AuthContext';
 
 export default function Login() {
   const [success,setSuccess] = useState(false);
   const [errorMsg,setErrorMsg] = useState("");
   const [showPassword,setShowPassword] = useState(false)
+  const {signInUser} = useContext(AuthContext);
+  const navigate = useNavigate()
+  const location = useLocation();
   const handleLogin = e =>{
     e.preventDefault();
     const email = e.target.email.value;
@@ -16,10 +18,8 @@ export default function Login() {
     setErrorMsg("")
     setSuccess(false)
     
-
-    signInWithEmailAndPassword(auth,email,password)
-    .then(userCredential=>{
-      console.log(userCredential.user)
+    signInUser(email,password)
+    .then(()=>{
       toast.success("Login Successful",{
         position:"top-center",
         autoClose: 4000,
@@ -27,7 +27,8 @@ export default function Login() {
         closeOnClick: true,
         draggable: true,
         theme: "dark"
-      })
+      });
+      navigate( location?.state ||  "/")
     })
     .catch(error=>{
       if(error.message.includes('(auth/invalid-credential)')){
@@ -37,6 +38,7 @@ export default function Login() {
         setErrorMsg(error.message)
       }
     })
+    
 
   }
   return (

@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import React, { useContext, useState } from 'react'
 import { Eye, EyeClosed, KeyRound, Mail, ShieldCheck } from 'lucide-react';
-import { auth } from '../Firebase/firebase.init';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
+import { AuthContext } from '../Contexts/AuthContext';
 export default function SignUp() {
   const [errorMsg,setErrorMsg] = useState('')
   const [confirmPass,setConfirmPass] =useState('');
   const [showPassword,setShowPassword] = useState(false);
   const [showConfirmPassword,setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const {createUser} = useContext(AuthContext)
   const handleRegister = e =>{
     e.preventDefault();
     const email = e.target.email.value;
@@ -33,8 +35,8 @@ export default function SignUp() {
       return
     }
 
-    createUserWithEmailAndPassword(auth,email,password)
-      .then(result =>{
+    createUser(email,password)
+      .then(() =>{
         toast.success("Account Created Successfully",{
           position:"top-center",
           autoClose: 4000,
@@ -42,8 +44,9 @@ export default function SignUp() {
           closeOnClick: true,
           draggable: true,
           theme: "dark"
-        })
-        console.log(result)
+        });
+        navigate("/")
+      
       })
       .catch(error=>{
         if (error.message.includes("auth/email-already-in-use")) {
@@ -53,7 +56,6 @@ export default function SignUp() {
         }
         console.log(error)
       })
-    console.log(email,password);
 
   }
   return (
