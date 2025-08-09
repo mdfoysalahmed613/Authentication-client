@@ -1,9 +1,11 @@
 import React from 'react'
+import { useContext } from 'react'
+import { AuthContext } from '../Contexts/AuthContext'
 
 export default function Home() {
+  const {user} = useContext(AuthContext)
+  const name = user?.displayName;
   return (
-    <div>
-      <p>Hey Develerp, Welcome Back!</p>
-    </div>
+    <p> Hey {name}</p>
   )
 }
